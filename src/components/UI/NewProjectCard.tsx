@@ -16,14 +16,21 @@ const NewProjectCard: React.FC<ProjectCardProps> = ({ project, showAdoptButton =
   const handleAdopt = (e: React.MouseEvent) => {
     e.preventDefault();
     e.stopPropagation();
-    
+
     if (user.projects.includes(project.id)) {
       toast.info('You have already adopted this project!');
       return;
     }
-    
+
     adoptProject(project.id);
-    toast.success(`Successfully adopted ${project.title}!`);
+    toast.success(`Successfully adopted ${project.title}! Redirecting to GitHub...`);
+
+    // Open the GitHub repo in a new tab if available
+    if (project.githubUrl) {
+      setTimeout(() => {
+        window.open(project.githubUrl, '_blank', 'noopener,noreferrer');
+      }, 1200); // Give user a moment to see the toast
+    }
   };
 
   const getDifficultyColor = (difficulty: string) => {
