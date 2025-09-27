@@ -98,7 +98,7 @@ const Navbar: React.FC<NavbarProps> = ({ user, onLogout }) => {
             {/* User info and logout */}
             {user && (
               <>
-                <span className="text-sm font-medium text-gray-700 dark:text-gray-200 px-2">{user.username}</span>
+                <span className="text-sm font-medium text-gray-700 dark:text-blue-600 px-2">{user.username}</span>
                 <button
                   onClick={onLogout}
                   className="px-3 py-1 rounded-md bg-gray-200 dark:bg-gray-800 text-gray-700 dark:text-gray-200 hover:bg-red-500 hover:text-white dark:hover:bg-red-600 transition-colors text-sm font-semibold"

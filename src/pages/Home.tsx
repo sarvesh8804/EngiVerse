@@ -149,7 +149,7 @@
 //               }`}
 //             >
 //               View All Projects
-//             </Link>
+//             </div>
 //           </div>
 
 //           <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-8">
@@ -234,7 +234,7 @@ import { motion } from "framer-motion";
 
 const fadeUp = {
   hidden: { opacity: 0, y: 30 },
-  show: { opacity: 1, y: 0, transition: { duration: 0.6, ease: "easeOut" } },
+  show: { opacity: 1, y: 0, transition: { duration: 0.6, ease: "easeInOut" } },
 };
 
 const staggerContainer = {
@@ -253,21 +253,30 @@ const Home: React.FC = () => {
       }`}
     >
       {/* Hero Section */}
-      <section className="relative overflow-hidden">
+      <section className="relative overflow-hidden h-screen">
+        <video
+          autoPlay
+          loop
+          muted
+          className="absolute inset-0 w-full h-full object-cover z-0"
+        >
+          <source src="/hero.mp4" type="video/mp4" />
+          Your browser does not support the video tag.
+        </video>
         <motion.div
           initial="hidden"
           animate="show"
           variants={staggerContainer}
-          className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-24 lg:py-32 text-center"
+          className="relative z-10 flex flex-col items-center justify-center h-full text-center"
         >
           <motion.h1
             variants={fadeUp}
             className={`text-4xl md:text-6xl font-bold mb-6 leading-tight ${
-              isDarkMode ? "text-white" : "text-gray-900"
+              isDarkMode ? "text-white" : "text-white"
             }`}
           >
             Where Engineering{" "}
-            <span className="bg-gradient-to-r from-blue-600 to-emerald-500 bg-clip-text text-transparent animate-gradient">
+            <span className="bg-gradient-to-r from-emerald-200 to-emerald-500 bg-clip-text text-transparent animate-gradient">
               Ideas Come to Life
             </span>
           </motion.h1>
@@ -275,7 +284,7 @@ const Home: React.FC = () => {
           <motion.p
             variants={fadeUp}
             className={`text-xl md:text-2xl mb-10 max-w-3xl mx-auto ${
-              isDarkMode ? "text-gray-300" : "text-gray-600"
+              isDarkMode ? "text-white" : "text-white"
             }`}
           >
             Discover, adopt, and contribute to innovative engineering side
