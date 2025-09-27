@@ -70,6 +70,7 @@ Please provide a JSON response with the following structure. Do not include any 
     { "step": "Step 5", "description": "Deploy the application to the production environment." },
     { "step": "Step 6", "description": "Gather user feedback and iterate on improvements." }
   ]
+    "pitchDeck": "A concise, persuasive pitch deck for this project, suitable for investors or stakeholders."
 }
 
 2. **Non-Technical Summary**:
@@ -160,7 +161,8 @@ Provide the technical summary in JSON format enclosed in a Markdown code block l
           complexity: 'Low',
           estimatedReadingTime: 'Unknown',
           futureScope: 'No future scope provided.',
-          roadmap: []
+          roadmap: [],
+          pitchDeck: 'Not available'
         },
         nonTechnicalSummary: 'Unable to generate non-technical summary due to a service error.'
       };

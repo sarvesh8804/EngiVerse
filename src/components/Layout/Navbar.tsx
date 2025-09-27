@@ -3,13 +3,16 @@ import { Link, useLocation } from 'react-router-dom';
 import { Code2, Menu, X, Sun, Moon, Bell } from 'lucide-react';
 import { useApp } from '../../context/AppContext';
 
-const Navbar: React.FC = () => {
+interface NavbarProps {
+  user?: { id: string; username: string };
+  onLogout?: () => void;
+}
+
+const Navbar: React.FC<NavbarProps> = ({ user, onLogout }) => {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const location = useLocation();
   const { isDarkMode, toggleDarkMode, notifications } = useApp();
-  
   const unreadCount = notifications.filter(n => !n.read).length;
-
   const navLinks = [
     { path: '/', label: 'Home' },
     { path: '/projects', label: 'Projects' },
@@ -17,13 +20,11 @@ const Navbar: React.FC = () => {
     { path: '/dashboard', label: 'Dashboard' },
     { path: '/mentor', label: 'Mentor' },
   ];
-
   const isActive = (path: string) => {
     if (path === '/' && location.pathname === '/') return true;
     if (path !== '/' && location.pathname.startsWith(path)) return true;
     return false;
   };
-
   return (
     <nav className={`sticky top-0 z-50 ${
       isDarkMode ? 'bg-gray-900 border-gray-800' : 'bg-white border-gray-200'
@@ -93,6 +94,19 @@ const Navbar: React.FC = () => {
                 </span>
               )}
             </Link>
+
+            {/* User info and logout */}
+            {user && (
+              <>
+                <span className="text-sm font-medium text-gray-700 dark:text-gray-200 px-2">{user.username}</span>
+                <button
+                  onClick={onLogout}
+                  className="px-3 py-1 rounded-md bg-gray-200 dark:bg-gray-800 text-gray-700 dark:text-gray-200 hover:bg-red-500 hover:text-white dark:hover:bg-red-600 transition-colors text-sm font-semibold"
+                >
+                  Logout
+                </button>
+              </>
+            )}
 
             {/* Mobile menu button */}
             <button

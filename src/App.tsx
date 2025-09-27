@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
 import { AppProvider } from './context/AppContext';
 import Navbar from './components/Layout/Navbar';
@@ -11,13 +11,36 @@ import Upload from './pages/Upload';
 import Dashboard from './pages/Dashboard';
 import Mentor from './pages/Mentor';
 import GitZen from './pages/GitZen';
+import Login from './components/UI/Login';
 
 function App() {
+  const [user, setUser] = useState<{ id: string; username: string } | null>(
+    () => {
+      // Try to restore from localStorage
+      const saved = localStorage.getItem('simple_user');
+      return saved ? JSON.parse(saved) : null;
+    }
+  );
+
+  const handleLogin = (user: { id: string; username: string }) => {
+    setUser(user);
+    localStorage.setItem('simple_user', JSON.stringify(user));
+  };
+
+  const handleLogout = () => {
+    setUser(null);
+    localStorage.removeItem('simple_user');
+  };
+
+  if (!user) {
+    return <Login onLogin={handleLogin} />;
+  }
+
   return (
     <AppProvider>
       <Router>
         <div className="min-h-screen">
-          <Navbar />
+          <Navbar user={user} onLogout={handleLogout} />
           <main>
             <Routes>
               <Route path="/" element={<Home />} />
@@ -28,7 +51,6 @@ function App() {
               <Route path="/mentor" element={<Mentor />} />
               <Route path="/project-report/:id" element={<ProjectReport />} />
               <Route path="/gitzen/:id" element={<GitZen />} />
-
             </Routes>
           </main>
           <ToastProvider />

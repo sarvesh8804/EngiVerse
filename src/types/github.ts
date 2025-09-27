@@ -59,4 +59,5 @@ export interface CodeSummary {
   estimatedReadingTime: string;
   futureScope: string;
   roadmap: { step: string; description: string }[];
+  pitchDeck?: string;
 }
