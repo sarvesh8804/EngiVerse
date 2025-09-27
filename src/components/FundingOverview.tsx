@@ -3,17 +3,17 @@ import { DollarSign, TrendingUp, TrendingDown, Wallet } from 'lucide-react';
 
 const FundingOverview: React.FC = () => {
   const fundingData = {
-    totalReceived: 8750,
-    totalGiven: 2400,
-    pendingFunds: 1200,
-    monthlyGrowth: 23.5
+    totalReceived: 500,
+    totalGiven: 50,
+    pendingFunds: 450,
+    monthlyGrowth: 250
   };
 
   const recentTransactions = [
-    { project: 'AI Code Review Tool', amount: 2500, type: 'received', date: '2 days ago', status: 'completed' },
-    { project: 'IoT Home Automation', amount: 800, type: 'given', date: '5 days ago', status: 'completed' },
-    { project: 'Mental Health Tracker', amount: 1200, type: 'received', date: '1 week ago', status: 'pending' },
-    { project: 'Blockchain Voting', amount: 1500, type: 'received', date: '2 weeks ago', status: 'completed' }
+    { project: 'AI Code Review Tool', amount: 300, type: 'received', date: '2 days ago', status: 'completed' },
+    { project: 'IoT Home Automation', amount: 100, type: 'given', date: '5 days ago', status: 'completed' },
+    { project: 'Mental Health Tracker', amount: 100, type: 'received', date: '1 week ago', status: 'pending' },
+    { project: 'Blockchain Voting', amount: 100, type: 'received', date: '2 weeks ago', status: 'completed' }
   ];
 
   return (

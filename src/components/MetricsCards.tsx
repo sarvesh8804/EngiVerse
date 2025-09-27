@@ -5,29 +5,29 @@ const MetricsCards: React.FC = () => {
   const metrics = [
     {
       title: 'Adopted Projects',
-      value: '12',
-      change: '+3 this month',
+      value: '4',
+      change: '+4 this month',
       icon: Target,
       trend: 'up'
     },
     {
       title: 'Total Contributions',
-      value: '847',
-      change: '+127 this week',
+      value: '17',
+      change: '+17 this week',
       icon: TrendingUp,
       trend: 'up'
     },
     {
       title: 'Completed Milestones',
-      value: '24',
-      change: '4 pending',
+      value: '2',
+      change: '1 pending',
       icon: Award,
       trend: 'neutral'
     },
     {
       title: 'Skill Level',
-      value: '76%',
-      change: '+12% this month',
+      value: '46%',
+      change: '+46% this month',
       icon: Zap,
       trend: 'up'
     }
