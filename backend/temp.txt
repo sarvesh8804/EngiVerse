@@ -1,5 +1,5 @@
 {
-    "clone_output": "Cloning into 'Base'...",
+    "clone_output": "Cloning into 'Colab'...",
     "pylint": "No Python files",
     "bandit": "No Python files",
     "semgrep": "No Python files",

@@ -22,7 +22,14 @@ ESLINT_CMD = ["eslint"]
 TSC_CMD = ["tsc", "--noEmit", "--allowJs"]
 
 # Gemini API key
-API_KEY = "AIzaSyC73xoP-OPOVlI2ojjlhxYt_sLV-Ohp3ys"
+# API_KEY = "AIzaSyC73xoP-OPOVlI2ojjlhxYt_sLV-Ohp3ys"
+from dotenv import load_dotenv
+import os
+import google.generativeai as genai
+
+load_dotenv()  # loads .env
+API_KEY = os.getenv("GEMINI_API_KEY")
+
 genai.configure(api_key=API_KEY)
 
 # ---------------------------------------- #
