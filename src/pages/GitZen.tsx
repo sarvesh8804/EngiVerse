@@ -51,7 +51,7 @@ export const GitZen: React.FC = () => {
     }
   };
 
-  const hasApiKeys = import.meta.env.VITE_GEMINI_API_KEY && import.meta.env.VITE_GITHUB_TOKEN;
+  const hasApiKeys = Boolean(import.meta.env.VITE_GEMINI_API_KEY);
 
   if (!hasApiKeys) {
     return (
@@ -73,9 +73,9 @@ export const GitZen: React.FC = () => {
                   </p>
                 </div>
                 <div className="bg-white p-3 rounded border">
-                  <strong>VITE_GITHUB_TOKEN</strong> (optional, but recommended)
+                  <strong>VITE_GITHUB_TOKEN</strong> (optional)
                   <p className="text-sm text-gray-600 mt-1">
-                    Get your token from: <a href="https://github.com/settings/tokens" target="_blank" rel="noopener noreferrer" className="text-blue-600 hover:underline">GitHub Developer Settings</a>
+                    If you want the frontend to query GitHub directly (not recommended), set this token. Otherwise configure the backend with <code>GITHUB_TOKEN</code> and set <code>VITE_BACKEND_URL</code> for the frontend to proxy requests through the server.
                   </p>
                 </div>
               </div>

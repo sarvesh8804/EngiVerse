@@ -10,9 +10,14 @@ from fastapi.middleware.cors import CORSMiddleware
 from fastapi.middleware.cors import CORSMiddleware
 # ---------------- CONFIG ---------------- #
 GIT_PATH = r"C:\Program Files\Git\cmd\git.exe"
-PYLINT_CMD = [r"C:\Users\Ishaan M Kulkarni\AppData\Roaming\Python\Scripts\pylint.exe"]
-BANDIT_CMD = [r"C:\Users\Ishaan M Kulkarni\AppData\Roaming\Python\Scripts\bandit.exe"]
-SEMgrep_CMD = [r"C:\Users\Ishaan M Kulkarni\AppData\Roaming\Python\Scripts\semgrep.exe"]
+# PYLINT_CMD = [r"C:\Users\Ishaan M Kulkarni\AppData\Roaming\Python\Scripts\pylint.exe"]
+# BANDIT_CMD = [r"C:\Users\Ishaan M Kulkarni\AppData\Roaming\Python\Scripts\bandit.exe"]
+# SEMgrep_CMD = [r"C:\Users\Ishaan M Kulkarni\AppData\Roaming\Python\Scripts\semgrep.exe"]# PYLINT_CMD = [r"C:\Users\Shreya\AppData\Roaming\Python\Python312\Scripts\pylint.exe"]
+PYLINT_CMD = [r"D:\engiverse\EngiVerse\.venv\Scripts\pylint.exe"]
+# BANDIT_CMD = [r"C:\Users\Shreya\AppData\Roaming\Python\Python312\Scripts\bandit.exe"]
+BANDIT_CMD = [r"D:\engiverse\EngiVerse\.venv\Scripts\bandit.exe"]
+# SEMgrep_CMD = [r":\Users\Shreya\AppData\Roaming\Python\Python312\Scripts\semgrep.exe"]
+SEMgrep_CMD = [r"D:\engiverse\EngiVerse\.venv\Scripts\semgrep.exe"]
 ESLINT_CMD = ["eslint"]
 TSC_CMD = ["tsc", "--noEmit", "--allowJs"]
 
@@ -45,6 +50,18 @@ app.add_middleware(
     allow_methods=["*"], # Allows all methods (GET, POST, OPTIONS, etc.)
     allow_headers=["*"], # Allows all headers
 )
+
+# Mount MCP server (Model Context Protocol) router
+try:
+    from .mcp_server import router as mcp_router
+    app.include_router(mcp_router, prefix="/mcp")
+except Exception:
+    try:
+        # Fallback in case running as a top-level script
+        from mcp_server import router as mcp_router
+        app.include_router(mcp_router, prefix="/mcp")
+    except Exception:
+        pass
 
 
 class RepoRequest(BaseModel):

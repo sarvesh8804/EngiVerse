@@ -1,26 +1,12 @@
 import { GitHubFile, GitHubRepository, ExtractionOptions, ExtractedCode } from '../types/github';
 
 class GitHubService {
-  private baseUrl = 'https://api.github.com';
-  private token = import.meta.env.VITE_GITHUB_TOKEN;
-
-  private getHeaders() {
-    const headers: Record<string, string> = {
-      'Accept': 'application/vnd.github.v3+json',
-      'User-Agent': 'GitZen-App'
-    };
-    
-    if (this.token) {
-      headers['Authorization'] = `token ${this.token}`;
-    }
-    
-    return headers;
-  }
+  // Use the backend proxy so we never expose a token from the client
+  private backendBase = import.meta.env.VITE_BACKEND_URL || 'http://localhost:5000';
 
   async getRepository(owner: string, repo: string): Promise<GitHubRepository> {
-    const response = await fetch(`${this.baseUrl}/repos/${owner}/${repo}`, {
-      headers: this.getHeaders()
-    });
+    const url = `${this.backendBase}/api/github/repos/${encodeURIComponent(owner)}/${encodeURIComponent(repo)}`;
+    const response = await fetch(url);
 
     if (!response.ok) {
       throw new Error(`Failed to fetch repository: ${response.statusText}`);
@@ -30,9 +16,9 @@ class GitHubService {
   }
 
   async getRepositoryContents(owner: string, repo: string, path = ''): Promise<GitHubFile[]> {
-    const response = await fetch(`${this.baseUrl}/repos/${owner}/${repo}/contents/${path}`, {
-      headers: this.getHeaders()
-    });
+    const url = new URL(`${this.backendBase}/api/github/repos/${encodeURIComponent(owner)}/${encodeURIComponent(repo)}/contents`);
+    if (path) url.searchParams.set('path', path);
+    const response = await fetch(url.toString());
 
     if (!response.ok) {
       throw new Error(`Failed to fetch repository contents: ${response.statusText}`);
@@ -42,12 +28,12 @@ class GitHubService {
   }
 
   async getFileContent(downloadUrl: string): Promise<string> {
-    const response = await fetch(downloadUrl);
-    
+    const url = new URL(`${this.backendBase}/api/github/file`);
+    url.searchParams.set('download_url', downloadUrl);
+    const response = await fetch(url.toString());
     if (!response.ok) {
       throw new Error(`Failed to fetch file content: ${response.statusText}`);
     }
-
     return response.text();
   }
 

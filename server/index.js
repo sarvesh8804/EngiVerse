@@ -571,6 +571,8 @@ import { fileURLToPath } from 'url';
 import Stripe from 'stripe';
 import dotenv from 'dotenv';
 dotenv.config();
+// GitHub token (should be set in environment)
+const GITHUB_TOKEN = process.env.GITHUB_TOKEN || null;
 
 // --- Stripe Setup ---
 const stripe = new Stripe("sk_test_51SBasvBUadzr6Wd84EXD1rIeDz7CoXKk0qpkI2SUdJOSVufASwN7fsOpMfzX3iIRuspHp5dLPqpm53dVQRh1b80600rJBXFU72");
@@ -589,6 +591,105 @@ const upload = multer({ dest: 'uploads/' });
 
 app.use(cors());
 app.use(express.json());
+
+// Helper to call GitHub API with optional server-side token
+async function callGithubApi(url, opts = {}) {
+  const headers = {
+    'Accept': 'application/vnd.github.v3+json',
+    'User-Agent': 'EngiVerse'
+  };
+  if (GITHUB_TOKEN) {
+    headers['Authorization'] = `token ${GITHUB_TOKEN}`;
+  }
+  const response = await fetch(url, { headers, ...opts });
+  const contentType = response.headers.get('content-type') || '';
+  if (contentType.includes('application/json')) {
+    const json = await response.json();
+    return { status: response.status, body: json };
+  }
+  const text = await response.text();
+  return { status: response.status, body: text };
+}
+
+// -------------------------
+// GitHub proxy routes (server-side token used)
+// -------------------------
+// Get repository info
+app.get('/api/github/repos/:owner/:repo', async (req, res) => {
+  try {
+    const { owner, repo } = req.params;
+    const url = `https://api.github.com/repos/${owner}/${repo}`;
+    const r = await callGithubApi(url);
+    res.status(r.status).json(r.body);
+  } catch (err) {
+    console.error('github repo error', err);
+    res.status(500).json({ error: err.message });
+  }
+});
+
+// List repository contents
+app.get('/api/github/repos/:owner/:repo/contents', async (req, res) => {
+  try {
+    const { owner, repo } = req.params;
+    const pathQuery = req.query.path ? `/${req.query.path}` : '';
+    const url = `https://api.github.com/repos/${owner}/${repo}/contents${pathQuery}`;
+    const r = await callGithubApi(url);
+    res.status(r.status).json(r.body);
+  } catch (err) {
+    console.error('github contents error', err);
+    res.status(500).json({ error: err.message });
+  }
+});
+
+// Fetch raw file by download_url OR by owner/repo/path
+app.get('/api/github/file', async (req, res) => {
+  try {
+    const { download_url, owner, repo, path } = req.query;
+    if (!download_url && !(owner && repo && path)) {
+      return res.status(400).json({ error: 'download_url OR owner+repo+path required' });
+    }
+    // Prefer fetching via the GitHub content API when we have owner/repo/path
+    if (owner && repo && path) {
+      const apiUrl = `https://api.github.com/repos/${owner}/${repo}/contents/${path}`;
+      const r = await callGithubApi(apiUrl);
+      if (r.status !== 200) return res.status(r.status).json(r.body);
+      // If API returned JSON with 'content' (base64), decode it.
+      if (r.body && r.body.content) {
+        const decoded = Buffer.from(r.body.content, 'base64').toString('utf-8');
+        return res.status(200).send(decoded);
+      }
+      // Otherwise return JSON
+      return res.status(200).json(r.body);
+    }
+
+    // If only download_url is provided, attempt to fetch raw content directly; if it fails fallback to attempting to extract details.
+    try {
+      const raw = await callGithubApi(download_url);
+      if (typeof raw.body === 'string') return res.status(raw.status).send(raw.body);
+      return res.status(raw.status).json(raw.body);
+    } catch (ex) {
+      // Try to extract owner/repo/path from the URL as a fallback
+      const m = /raw\.githubusercontent\.com\/(.*?)\/(.*?)\/(?:[^\/]+)\/(.*)$/i.exec(download_url);
+      if (m && m.length >= 4) {
+        const fallbackOwner = m[1];
+        const fallbackRepo = m[2];
+        const fallbackPath = m[3];
+        const apiUrl = `https://api.github.com/repos/${fallbackOwner}/${fallbackRepo}/contents/${fallbackPath}`;
+        const r2 = await callGithubApi(apiUrl);
+        if (r2.status !== 200) return res.status(r2.status).json(r2.body);
+        if (r2.body && r2.body.content) {
+          const decoded = Buffer.from(r2.body.content, 'base64').toString('utf-8');
+          return res.status(200).send(decoded);
+        }
+        return res.status(200).json(r2.body);
+      }
+      return res.status(500).json({ error: 'Unable to fetch file content' });
+    }
+  } catch (err) {
+    console.error('github file error', err);
+    res.status(500).json({ error: err.message });
+  }
+});
 
 // ========================
 // Helper Functions
